@@ -14,13 +14,12 @@ class App extends Component {
     };
   }
 
-  componentDidMount() {
+  getData(){
     const apiKey = 'APIKey';
     let url = `https://www.googleapis.com/books/v1/volumes?q=${this.state.searchTerm}&printType=${this.state.printType}&key=${apiKey}`;
     if (this.state.bookType !== ""){
       url = `https://www.googleapis.com/books/v1/volumes?q=${this.state.searchTerm}&printType=${this.state.printType}&filter=${this.state.bookType}&key=${apiKey}`
     }
-    console.log(url);
     fetch(url)
       .then(res => {
         if(!res.ok) {
@@ -30,8 +29,6 @@ class App extends Component {
       })
       .then(res => res.json())
       .then(data => {
-        // console.log(data);
-        // console.log(data.items[0].volumeInfo.title);
         let tempResults = [];
         for (let i =0;i<data.items.length;i++){
           tempResults.push(data.items[i].volumeInfo.title)
@@ -39,36 +36,39 @@ class App extends Component {
         this.setState({
           results: tempResults
         });
-        // console.log(this.state.results)
       })
       .catch(err => {
         this.setState({
           error: err.message
         });
       });
+  }
 
+  componentDidMount() {
+    this.getData();
   }
 
   setSearchTerm = (event) =>{
     event.preventDefault()
-    console.log(event.target.value)
+    console.log(event.target[0].value)
     this.setState({
-      searchTerm: event.target.value
+      searchTerm: event.target[0].value
     });
+    this.getData();
   }
 
   setPrintType = (event)=>{
-    // console.log(event.target.value)
     this.setState({
       printType: event.target.value
     });
+    this.getData();
   }
 
   setBookType = (event) =>{
-    // console.log(event.target.value)
     this.setState({
       bookType: event.target.value
     });
+    this.getData();
   }
 
   render(){
